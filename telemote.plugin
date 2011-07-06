@@ -1,0 +1,9 @@
+[Plugin]
+Loader=python
+Module=telemote
+IAge=2
+Depends=rb
+Name=TeleMote
+Description=Inform Zeitgeist about your activity
+Authors=Jesse van den Kieboom <jessevdk@gnome.org>
+Copyright=Copyright © 2011 Jesse van den Kieboom
