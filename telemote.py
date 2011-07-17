@@ -1,6 +1,7 @@
 from gi.repository import GObject, Peas
 
 from webserver import WebServer
+import os
 
 class TeleMotePlugin(GObject.Object, Peas.Activatable):
     __gtype_name__ = 'TeleMotePlugin'
@@ -11,7 +12,7 @@ class TeleMotePlugin(GObject.Object, Peas.Activatable):
         GObject.Object.__init__(self)
 
     def do_activate(self):
-        self.server = WebServer()
+        self.server = WebServer(self.object, os.path.dirname(os.path.realpath(__file__)))
         self.server.start()
 
     def do_deactivate(self):

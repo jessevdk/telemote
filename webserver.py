@@ -1,27 +1,34 @@
-from twisted.web import server, resource
+from twisted.web import server, resource, static
 from twisted.internet import reactor
 
-import threading
+import threading, rb, os
+import source
 
-class Site(resource.Resource):
-    isLeaf = True
+class Root(resource.Resource):
+    isLeaf = False
 
     def render_GET(self, request):
         pass
 
+    def getChild(self, path, request):
+        return self
+
 class WebServer(threading.Thread):
-    def __init__(self, port=8888):
+    def __init__(self, shell, datadir, port=8888):
         threading.Thread.__init__(self)
 
+        self.shell = shell
         self.port = port
-        self.site = server.Site(Site)
+        self.site = Root()
+
+        self.site.putChild("static", static.File(os.path.join(datadir, 'static')))
+        self.site.putChild("playlist", source.Sources(self.shell))
 
     def run(self):
-        reactor.listenTCP(self.port, self.site)
+        reactor.listenTCP(self.port, server.Site(self.site))
         reactor.run(installSignalHandlers=False)
 
     def stop(self):
-        # TODO
-        pass
+        reactor.stop()
 
 # vi:ex:ts=4:et
