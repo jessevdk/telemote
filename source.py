@@ -5,19 +5,24 @@ import json
 
 from artist import Artists
 from collection import Collection
+import utils
 
 class Source(resource.Resource):
-    def __init__(self, parent, id, me):
+    Multiple = False
+
+    def __init__(self, base, id, source):
         resource.Resource.__init__(self)
 
-        self.source = me
+        self.base = base
         self.id = id
+        self.source = source
+
         self.model = self.source.props.base_query_model
 
         self.putChild('artist', Artists(self))
 
     def render_GET(self, request):
-        return self.id
+        return json.dumps(utils.render_entries(self.model))
 
     def getChild(self, path, request):
         return self

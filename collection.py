@@ -13,7 +13,13 @@ class Collection(resource.Resource):
         if name == '':
             return self
 
-        id = int(name)
+        if ',' in name:
+            id = [int(x) for x in name.split(',')]
+        else:
+            id = [int(name)]
+
+        if not hasattr(self.child_type, 'Multiple') or not self.child_type.Multiple:
+            id = id[0]
 
         return self.child_type(self, id, self.entity(id))
 

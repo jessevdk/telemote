@@ -4,6 +4,6 @@ Module=telemote
 IAge=2
 Depends=rb
 Name=TeleMote
-Description=Inform Zeitgeist about your activity
+Description=Remote Control
 Authors=Jesse van den Kieboom <jessevdk@gnome.org>
 Copyright=Copyright © 2011 Jesse van den Kieboom

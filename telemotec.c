@@ -24,6 +24,24 @@ obj_as_number (PyObject *obj, int *val)
 	return TRUE;
 }
 
+static gboolean
+obj_as_string (PyObject *obj, gchar **val)
+{
+	PyObject *strval;
+
+	strval = PyObject_Str (obj);
+
+	if (!strval)
+	{
+		return FALSE;
+	}
+
+	*val = g_strdup (PyString_AsString (strval));
+	Py_DECREF (strval);
+
+	return TRUE;
+}
+
 static PyObject *
 query_model_new (PyObject *self, PyObject *args)
 {
@@ -73,6 +91,8 @@ query_model_new (PyObject *self, PyObject *args)
 		if (qtype != RHYTHMDB_QUERY_DISJUNCTION)
 		{
 			int ptype;
+			gchar *s = NULL;
+			GValue sval = {0,};
 
 			if (!obj_as_number (PySequence_GetItem (args, i + 1), &ptype))
 			{
@@ -80,13 +100,23 @@ query_model_new (PyObject *self, PyObject *args)
 				return NULL;
 			}
 
-			rhythmdb_query_append (db, q, qtype, ptype, RHYTHMDB_QUERY_END);
+			if (!obj_as_string (PySequence_GetItem (args, i + 2), &s))
+			{
+				g_object_unref (q);
+				return NULL;
+			}
 
-			++i;
+			g_value_init (&sval, G_TYPE_STRING);
+			g_value_take_string (&sval, s);
+
+			rhythmdb_query_append_params (db, q, qtype, ptype, &sval);
+			g_value_unset (&sval);
+
+			i += 2;
 		}
 		else
 		{
-			rhythmdb_query_append (db, q, qtype, 0, RHYTHMDB_QUERY_END);
+			rhythmdb_query_append_params (db, q, qtype, 0, NULL);
 		}
 
 		++i;
@@ -121,6 +151,9 @@ query_model_do (PyObject *self, PyObject *args, PyObject *kwargs)
 	rhythmdb_do_full_query_parsed (db,
 	                               RHYTHMDB_QUERY_RESULTS (model),
 	                               query);
+
+	Py_INCREF (Py_None);
+	return Py_None;
 }
 
 static PyMethodDef TeleMoteCMethods[] =

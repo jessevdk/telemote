@@ -7,37 +7,33 @@ import json
 import telemotec
 import utils
 
-from album import Albums
-
-class Artist(resource.Resource):
+class Album(resource.Resource):
     Multiple = True
 
-    def __init__(self, base, ids, artists):
+    def __init__(self, base, ids, albums):
         resource.Resource.__init__(self)
 
         self.base = base
 
         self.ids = ids
-        self.artists = artists
+        self.albums = albums
 
         self.build_model()
-
-        self.putChild('album', Albums(self))
 
     def build_model(self):
         db = self.base.model.props.db
 
         args = []
 
-        for i in xrange(len(self.artists)):
-            artist = self.artists[i]
+        for i in xrange(len(self.albums)):
+            album = self.albums[i]
 
             if i != 0:
                 args.append(RB.RhythmDBQueryType.DISJUNCTION)
 
             args.extend([RB.RhythmDBQueryType.EQUALS,
-                         RB.RhythmDBPropType.ARTIST,
-                         artist[0]])
+                         RB.RhythmDBPropType.ALBUM,
+                         album[0]])
 
         self.model = telemotec.query_model_new(db, *args)
         self.model.chain(self.base.model, False)
@@ -47,37 +43,34 @@ class Artist(resource.Resource):
     def render_GET(self, request):
         return json.dumps(utils.render_entries(self.model))
 
-    def getChild(self, path, request):
-        return self
-
-class Artists(Collection):
+class Albums(Collection):
     def __init__(self, base):
-        Collection.__init__(self, Artist)
+        Collection.__init__(self, Album)
 
         self.base = base
-        self.model = base.model
 
         self.populate()
 
     def populate(self):
+        self.model = self.base.model
         db = self.model.props.db
 
-        self.property_model = RB.RhythmDBPropertyModel.new(db, RB.RhythmDBPropType.ARTIST)
+        self.property_model = RB.RhythmDBPropertyModel.new(db, RB.RhythmDBPropType.ALBUM)
         self.property_model.props.query_model = self.model
 
         iter = self.property_model.get_iter_first()
 
-        self.artists = []
+        self.albums = []
 
         while iter:
-            self.artists.append([self.property_model.get_value(iter, 0),
-                                 self.property_model.get_value(iter, 1),
-                                 self.property_model.get_value(iter, 2)])
+            self.albums.append([self.property_model.get_value(iter, 0),
+                                self.property_model.get_value(iter, 1),
+                                self.property_model.get_value(iter, 2)])
 
             iter = self.property_model.iter_next(iter)
 
     def entity(self, ids):
-        return [self.artists[id] for id in ids]
+        return [self.albums[id] for id in ids]
 
     def render_GET(self, request):
         ret = {
@@ -88,8 +81,8 @@ class Artists(Collection):
         i = 0
         items = []
 
-        for artist in self.artists:
-            items.append([i, artist[0], artist[1], artist[2]])
+        for album in self.albums:
+            items.append([i, album[0], album[1], album[2]])
             i += 1
 
         ret['items'] = items

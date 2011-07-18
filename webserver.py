@@ -3,6 +3,7 @@ from twisted.internet import reactor
 
 import threading, rb, os
 import source
+import player
 
 class Root(resource.Resource):
     isLeaf = False
@@ -23,6 +24,7 @@ class WebServer(threading.Thread):
 
         self.site.putChild("static", static.File(os.path.join(datadir, 'static')))
         self.site.putChild("playlist", source.Sources(self.shell))
+        self.site.putChild("player", player.Player(self.shell))
 
     def run(self):
         reactor.listenTCP(self.port, server.Site(self.site))
