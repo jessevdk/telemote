@@ -10,14 +10,17 @@ import utils
 class Source(resource.Resource):
     Multiple = False
 
-    def __init__(self, base, id, source):
+    def __init__(self, base, id, source, model=None):
         resource.Resource.__init__(self)
 
         self.base = base
         self.id = id
         self.source = source
 
-        self.model = self.source.props.base_query_model
+        if not model:
+            model = self.source.props.base_query_model
+
+        self.model = model
 
         self.putChild('artist', Artists(self))
 
@@ -36,7 +39,6 @@ class Sources(Collection):
         self.sources_rev = {}
         self.source_id = 0
 
-        self.add_source(self.shell.props.queue_source)
         self.add_source(self.shell.props.library_source)
 
         pm = self.shell.get_playlist_manager()
@@ -73,15 +75,19 @@ class Sources(Collection):
 
         return [
             id,
-            pl.props.name
+            pl.props.name,
+            pl.props.base_query_model.iter_n_children(None)
         ]
 
     def render_GET(self, request):
         ret = [self.format_source(x) for x in self.sources]
         ret.sort(key=lambda x: x[0])
 
+        cur = self.shell.get_player().props.source
+        ret.insert(0, [-1, 'Currently Playing', cur.props.query_model.iter_n_children(None)])
+
         return json.dumps({
-            'header': ['id', 'name'],
+            'header': ['id', 'name', 'count'],
             'items': ret
         });
 
