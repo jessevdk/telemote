@@ -1,0 +1,25 @@
+.playlists
+{
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  float: left;
+  width: 200px;
+  border-right: 1px solid #aaa;
+  height: 100%;
+  background-color: #efefef;
+
+  color: #333;
+}
+
+.playlists .listview tr:hover td
+{
+  color: #000;
+}
+
+.playlists .listview table td
+{
+  padding: 10px;
+}
+
+/* vi:ex:ts=2:et */

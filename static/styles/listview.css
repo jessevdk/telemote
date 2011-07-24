@@ -1,0 +1,58 @@
+.listview
+{
+  overflow: auto;
+}
+
+.listview table
+{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.listview tr
+{
+}
+
+.listview tr:nth-child(2n) td
+{
+  background-color: rgba(0%, 0%, 0%, 0.02);
+}
+
+.listview.selectable tr:hover td
+{
+  background-color: rgba(100%, 100%, 100%, 0.5);
+}
+
+.listview.selectable tr.selected:hover td
+{
+  background-color: #3793ff;
+  color: #fff;
+}
+
+.listview td
+{
+  padding: 5px;
+  -webkit-transition: background 100ms linear, color 100ms ease-in, text-shadow 100ms ease-in;
+  text-shadow: 1px 1px 1px #fff;
+}
+
+.listview tr.selected td
+{
+  background-color: #0076ff;
+  text-shadow: 1px 1px 1px #000;
+  color: #fff;
+}
+
+.listview.selectable tr td
+{
+  cursor: pointer;
+}
+
+.listview th
+{
+  background-color: #666;
+  padding: 10px;
+  color: #fff;
+}
+
+/* vi:ex:ts=2:et */

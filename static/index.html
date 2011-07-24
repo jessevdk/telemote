@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TeleMote</title>
+        <script type="text/javascript" src="/static/javascript/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="/static/javascript/jquery.include.js"></script>
+        <script type="text/javascript" src="/static/javascript/application.js"></script>
+        <link rel="stylesheet" href="/static/styles/default.css" type="text/css" media="all" charset="utf-8" />
+    </head>
+    <body>
+        <div id="playlists">
+        </div>
+        <div id="artists">
+        </div>
+
+        <script type="text/javascript">
+            $(window).ready(function () {
+                $('#playlists').playlists({
+                    listview: {
+                        selection_changed: function () {
+                        }
+                    }
+                });
+                var ar = $('#artists').artists();
+            });
+        </script>
+    </body>
+</html>
+<!-- vi:ex:ts=4:et -->
