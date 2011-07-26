@@ -100,14 +100,30 @@ query_model_new (PyObject *self, PyObject *args)
 				return NULL;
 			}
 
-			if (!obj_as_string (PySequence_GetItem (args, i + 2), &s))
+			if (ptype == RHYTHMDB_PROP_ENTRY_ID)
 			{
-				g_object_unref (q);
-				return NULL;
-			}
+				gint it;
 
-			g_value_init (&sval, G_TYPE_STRING);
-			g_value_take_string (&sval, s);
+				if (!obj_as_number (PySequence_GetItem (args, i + 2), &it))
+				{
+					g_object_unref (q);
+					return NULL;
+				}
+
+				g_value_init (&sval, G_TYPE_ULONG);
+				g_value_set_ulong (&sval, (gulong)it);
+			}
+			else
+			{
+				if (!obj_as_string (PySequence_GetItem (args, i + 2), &s))
+				{
+					g_object_unref (q);
+					return NULL;
+				}
+
+				g_value_init (&sval, G_TYPE_STRING);
+				g_value_take_string (&sval, s);
+			}
 
 			rhythmdb_query_append_params (db, q, qtype, ptype, &sval);
 			g_value_unset (&sval);
@@ -156,9 +172,58 @@ query_model_do (PyObject *self, PyObject *args, PyObject *kwargs)
 	return Py_None;
 }
 
+static gint
+compare_songs (RhythmDBEntry *a,
+               RhythmDBEntry *b)
+{
+	/* First sort on artist, then album, then song */
+	gint ret;
+
+	ret = rhythmdb_query_model_artist_sort_func (a, b, NULL);
+
+	if (ret != 0)
+	{
+		return ret;
+	}
+
+	ret = rhythmdb_query_model_album_sort_func (a, b, NULL);
+
+	if (ret != 0)
+	{
+		return ret;
+	}
+
+	return rhythmdb_query_model_title_sort_func (a, b, NULL);
+}
+
+static PyObject *
+query_model_set_sorted (PyObject *self, PyObject *args, PyObject *kwargs)
+{
+	PyObject *pymodel;
+	RhythmDBQueryModel *model;
+	static gchar *keywords[] = {"model", NULL};
+
+	if (!PyArg_ParseTupleAndKeywords (args, kwargs, "O", keywords, &pymodel))
+	{
+		return NULL;
+	}
+
+	model = RHYTHMDB_QUERY_MODEL (pygobject_get (pymodel));
+
+	rhythmdb_query_model_set_sort_order (model,
+	                                     (GCompareDataFunc)compare_songs,
+	                                     NULL,
+	                                     NULL,
+	                                     FALSE);
+
+	Py_INCREF (Py_None);
+	return Py_None;
+}
+
 static PyMethodDef TeleMoteCMethods[] =
 {
 	{"query_model_new", query_model_new, METH_VARARGS, "Query model new"},
+	{"query_model_set_sorted", (PyCFunction)query_model_set_sorted, METH_VARARGS | METH_KEYWORDS, "Query model set sorted"},
 	{"query_model_do", (PyCFunction)query_model_do, METH_VARARGS | METH_KEYWORDS, "Query model do"},
 	{NULL, NULL, 0, NULL}
 };

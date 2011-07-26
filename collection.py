@@ -9,6 +9,9 @@ class Collection(resource.Resource):
     def entity(self, id):
         return None
 
+    def create_child(self, id):
+        return self.child_type(self, id, self.entity(id))
+
     def getChild(self, name, request):
         if name == '':
             return self
@@ -21,6 +24,6 @@ class Collection(resource.Resource):
         if not hasattr(self.child_type, 'Multiple') or not self.child_type.Multiple:
             id = id[0]
 
-        return self.child_type(self, id, self.entity(id))
+        return self.create_child(id)
 
 # vi:ex:ts=4:et

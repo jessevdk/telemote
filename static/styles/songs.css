@@ -1,0 +1,23 @@
+#songs .listview td.album div.album
+{
+  font-weight: bold;
+}
+
+#songs .listview td.album div.artist
+{
+  font-style: italic;
+}
+
+#songs .listview tr.selected td.album
+{
+  background-color: inherit;
+  color: inherit;
+  text-shadow: inherit;
+}
+
+#songs .listview tr.grouped td
+{
+  border-top: 1px solid #aaa;
+}
+
+/* vi:ex:ts=2:et */

@@ -3,10 +3,7 @@
   overflow-x: hidden;
   overflow-y: auto;
 
-  float: left;
-  width: 200px;
   border-right: 1px solid #aaa;
-  height: 100%;
   background-color: #fff;
 
   color: #333;

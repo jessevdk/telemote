@@ -29,7 +29,7 @@ class Album(resource.Resource):
             album = self.albums[i]
 
             if i != 0:
-                args.append(RB.RhythmDBQueryType.DISJUNCTION)
+                args.append(RB.RhythmDBQueryType.DISJUNCTIVE_MARKER)
 
             args.extend([RB.RhythmDBQueryType.EQUALS,
                          RB.RhythmDBPropType.ALBUM,

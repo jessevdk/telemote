@@ -51,6 +51,14 @@ class Sources(Collection):
     def entity(self, id):
         return self.sources[id]
 
+    def create_child(self, id):
+        if id == -1:
+            src = self.shell.get_player().props.source
+
+            return Source(self, id, src, src.props.query_model)
+        else:
+            return Collection.create_child(self, id)
+
     def on_playlist_added(self, pm, playlist):
         self.add_source(playlist)
 
@@ -78,6 +86,12 @@ class Sources(Collection):
             pl.props.name,
             pl.props.base_query_model.iter_n_children(None)
         ]
+
+    def source(self, id):
+        if id == -1:
+            return self.shell.get_player().props.source
+        else:
+            return self.sources[id]
 
     def render_GET(self, request):
         ret = [self.format_source(x) for x in self.sources]

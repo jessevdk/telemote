@@ -1,6 +1,8 @@
 .listview
 {
   overflow: auto;
+  height: 100%;
+  font-size: 0.9em;
 }
 
 .listview table
@@ -11,6 +13,13 @@
 
 .listview tr
 {
+}
+
+.listview th
+{
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#aaa));
+  background: -moz-linear-gradient(top, #fff, #aaa);
+  padding: 5px;
 }
 
 .listview tr:nth-child(2n) td
@@ -48,11 +57,9 @@
   cursor: pointer;
 }
 
-.listview th
+.listview td.grouped
 {
-  background-color: #666;
-  padding: 10px;
-  color: #fff;
+  vertical-align: top;
 }
 
 /* vi:ex:ts=2:et */

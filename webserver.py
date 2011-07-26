@@ -27,8 +27,10 @@ class WebServer(threading.Thread):
         self.site = Root(datadir)
 
         self.site.putChild("static", static.File(os.path.join(datadir, 'static')))
-        self.site.putChild("playlist", source.Sources(self.shell))
-        self.site.putChild("player", player.Player(self.shell))
+
+        sources = source.Sources(self.shell)
+        self.site.putChild("playlist", sources)
+        self.site.putChild("player", player.Player(self.shell, sources))
 
     def run(self):
         reactor.listenTCP(self.port, server.Site(self.site))

@@ -8,11 +8,6 @@
 			{
 				var pl = $('<div/>');
 
-				$this.data('playlists', {
-					target: $this,
-					playlists: pl
-				});
-
 				var settings = {
 					listview: {
 						columns: [
@@ -23,13 +18,24 @@
 						],
 						multiselect: false,
 						header_visible: true
-					}
+					},
+					loaded: function () {}
 				};
+
+				if (options.loaded)
+				{
+					settings.loaded = options.loaded;
+				}
 
 				$.extend(settings.listview, options.listview);
 
-				pl.listview(settings.listview);
+				$this.data('playlists', {
+					target: $this,
+					playlists: pl,
+					settings: settings
+				});
 
+				pl.listview(settings.listview);
 				pl.appendTo($this);
 			}
 
@@ -37,8 +43,9 @@
 			$this.playlists('refresh');
 		},
 
-		refresh: function (options) {
-			var data = this.data('playlists');
+		refresh: function () {
+			var $this = $(this),
+			    data = $this.data('playlists');
 
 			$.getJSON('/playlist', function (d) {
 				var header = Utils.header_map(d['header']);
@@ -54,7 +61,16 @@
 
 				data.playlists.listview('clear');
 				data.playlists.listview('append', rows);
+
+				data.settings.loaded.call($this);
 			});
+		},
+
+		listview: function () {
+			var $this = $(this),
+			    data = $this.data('playlists');
+
+			return $(data.playlists);
 		},
 
 		destroy: function () {
@@ -84,3 +100,5 @@
 		}
 	};
 })(jQuery);
+
+/* vi:ex:ts=4 */

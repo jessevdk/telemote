@@ -28,19 +28,30 @@ class Artist(resource.Resource):
         db = self.base.model.props.db
 
         args = []
+        isall = False
 
         for i in xrange(len(self.artists)):
             artist = self.artists[i]
 
+            if artist[1]:
+                args = []
+                isall = True
+                break
+
             if i != 0:
-                args.append(RB.RhythmDBQueryType.DISJUNCTION)
+                args.append(RB.RhythmDBQueryType.DISJUNCTIVE_MARKER)
 
             args.extend([RB.RhythmDBQueryType.EQUALS,
                          RB.RhythmDBPropType.ARTIST,
                          artist[0]])
 
         self.model = telemotec.query_model_new(db, *args)
-        self.model.chain(self.base.model, False)
+        telemotec.query_model_set_sorted(self.model)
+
+        if isall:
+            self.model.copy_contents(self.base.model)
+        else:
+            self.model.chain(self.base.model, False)
 
         utils.run_in_main(telemotec.query_model_do, db, self.model)
 
@@ -81,7 +92,7 @@ class Artists(Collection):
 
     def render_GET(self, request):
         ret = {
-            'header': ['id', 'name', 'is-all', 'n'],
+            'header': ['id', 'name', 'is-all', 'count'],
             'items': []
         }
 

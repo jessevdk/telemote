@@ -1,0 +1,150 @@
+#player #actions
+{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#player #buttons
+{
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+#player #buttons img
+{
+  margin-left: 5px;
+}
+
+#player #buttons .toggled
+{
+  background: -webkit-gradient(linear, left top, left bottom, from(#333), to(#666));
+  background: -moz-linear-gradient(top, #333, #666);
+}
+
+#player #buttons #button_repeat
+{
+  margin-left: 15px;
+}
+
+#player #playing
+{
+  padding: 10px 0px 0px 10px;
+}
+
+#player #playing .song
+{
+  display: inline;
+  font-weight: bold;
+}
+
+#player #playing .artist
+{
+  display: inline;
+  padding-left: 10px;
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+#player #playing .album
+{
+  display: inline;
+  padding-left: 10px;
+  font-size: 0.9em;
+}
+
+#player #playing_duration
+{
+  position: absolute;
+  background-color: #ddd;
+  height: 16px;
+  border-radius: 10px;
+  top: 36px;
+  left: 10px;
+  right: 290px;
+  box-shadow: 1px 1px 3px #333;
+}
+
+#player .progress
+{
+  background-color: #00f;
+  height: 100%;
+  border-radius: 10px 0px 0 10px;
+}
+
+#player .progress.complete
+{
+  border-radius: 10px;
+}
+
+#player #duration_text
+{
+  position: absolute;
+  top: 0px;
+  right: 290px;
+  margin-top: 10px;
+}
+
+#player #queue
+{
+  position: absolute;
+  top: 60px;
+  left: 0px;
+  right: 290px;
+  bottom: 10px;
+
+  margin-left: 10px;
+  padding: 5px;
+  overflow-y: visible;
+  overflow-x: hidden;
+}
+
+#player #queue .queued
+{
+  position: relative;
+  border-radius: 10px;
+  border: 1px solid #111;
+  float: left;
+  margin-right: 5px;
+  height: 62px;
+  font-size: 0.7em;
+  width: 100px;
+  color: #fff;
+  background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#222));
+  background: -moz-linear-gradient(top, #111, #333);
+  overflow: hidden;
+}
+
+#player #queue .queued .artist
+{
+  display: block;
+  text-align: center;
+  padding: 0;
+  margin-top: 5px;
+}
+
+#player #queue .queued .song
+{
+  display: block;
+  text-align: center;
+  padding: 0;
+}
+
+#player #queue .queued input[type='button']
+{
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* vi:ex:ts=2:et */

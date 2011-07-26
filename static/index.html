@@ -8,21 +8,112 @@
         <link rel="stylesheet" href="/static/styles/default.css" type="text/css" media="all" charset="utf-8" />
     </head>
     <body>
-        <div id="playlists">
+        <div id="layout">
+        <div id="main">
+            <div id="playlists"></div>
+            <div id="artists"></div>
+            <div class="vbox">
+                <div id="songs"></div>
+            </div>
         </div>
-        <div id="artists">
+        <div id="player">
+        </div>
         </div>
 
         <script type="text/javascript">
-            $(window).ready(function () {
+            var initializing = true;
+
+            function current_source()
+            {
+                var selection = $('#playlists').playlists('listview').listview('selected');
+
+                if (selection)
+                {
+                    return selection[0].id;
+                }
+            }
+
+            function animate_activate(elements, timeout, times, callback)
+            {
+                if (times == 0)
+                {
+                    callback(elements);
+                    return;
+                }
+
+                elements.toggleClass('selected');
+
+                setTimeout(function () { animate_activate (elements, timeout, times - 1, callback)}, timeout);
+            }
+
+            $(document).ready(function () {
                 $('#playlists').playlists({
                     listview: {
                         selection_changed: function () {
+                            $('#artists').artists('refresh', current_source());
                         }
+                    },
+                    loaded: function () {
+                        $(this).playlists('listview').listview('select_index', 0);
                     }
                 });
-                var ar = $('#artists').artists();
+                $('#artists').artists({
+                    listview: {
+                        selection_changed: function () {
+                            var src = current_source();
+                            var selection = $.map(this.listview('selected'),
+                                                  function (item) {
+                                                      return item.id;
+                                                  });
+
+                            $('#songs').songs('refresh', src, selection);
+                        }
+                    },
+                    loaded: function () {
+                        $(this).artists('listview').listview('select_index', 0);
+                    }
+                });
+                $('#songs').songs({
+                    listview: {
+                        activated: function (rows) {
+                            animate_activate(rows.target, 100, 6, function () {
+                                $('#player').player('queue', rows.data.id);
+                            });
+                        }
+                    },
+                    queued: function (row) {
+                        animate_activate(row.target, 100, 6, function () {
+                            $('#player').player('queue', row.data.id);
+                        });
+                    }
+                });
+
+                $('#player').player();
             });
+
+            function set_playlist(button)
+            {
+                $(button).addClass('pressed');
+
+                var src = current_source();
+                var listview = $('#songs').songs('listview');
+                var selection = listview.listview('selected');
+
+                if (!selection || selection.length == 0)
+                {
+                    selection = listview.listview('rows');
+                }
+
+                var ids = $.map(selection, function (item) {
+                    return item.id;
+                });
+
+                setTimeout(function () {
+                    $(button).removeClass('pressed');
+                }, 100);
+
+                $('#player').player('playlist', src, ids);
+            }
         </script>
     </body>
 </html>

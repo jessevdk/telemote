@@ -8,11 +8,6 @@
 			{
 				var pl = $('<div/>');
 
-				$this.data('artists', {
-					target: $this,
-					artists: pl
-				});
-
 				var settings = {
 					listview: {
 						columns: [
@@ -23,10 +18,22 @@
 						],
 						multiselect: true,
 						header_visible: true
-					}
+					},
+					loaded: function () {}
 				};
 
-				$.extend(settings, options);
+				$.extend(settings.listview, options.listview);
+
+				if (options.loaded)
+				{
+					settings.loaded = options.loaded;
+				}
+
+				$this.data('artists', {
+					target: $this,
+					artists: pl,
+					settings: settings
+				});
 
 				pl.listview(settings.listview);
 
@@ -38,9 +45,10 @@
 		},
 
 		refresh: function(sourceid) {
-			var data = this.data('artists');
+			var $this = $(this),
+			    data = $this.data('artists');
 
-			if (!sourceid)
+			if (sourceid === undefined)
 			{
 				data.artists.listview('clear');
 				return;
@@ -60,7 +68,16 @@
 
 				data.artists.listview('clear');
 				data.artists.listview('append', rows);
+
+				data.settings.loaded.call($this);
 			});
+		},
+
+		listview: function () {
+			var $this = $(this),
+			    data = $this.data('artists');
+
+			return $(data.artists);
 		},
 
 		destroy: function () {
@@ -90,3 +107,5 @@
 		}
 	};
 })(jQuery);
+
+/* vi:ex:ts=4 */
