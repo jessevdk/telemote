@@ -61,25 +61,28 @@
 #player #playing_duration
 {
   position: absolute;
-  background-color: #ddd;
-  height: 16px;
-  border-radius: 10px;
   top: 36px;
   left: 10px;
   right: 290px;
-  box-shadow: 1px 1px 3px #333;
+}
+
+#player .progress_container
+{
+  background-color: #ccc;
+  height: 16px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 #player .progress
 {
-  background-color: #00f;
+  background-color: #666;
   height: 100%;
-  border-radius: 10px 0px 0 10px;
+  border-radius: 10px;
 }
 
 #player .progress.complete
 {
-  border-radius: 10px;
 }
 
 #player #duration_text
@@ -145,6 +148,14 @@
   text-align: center;
   padding: 0;
   box-shadow: none;
+}
+
+#player #volume_progress_container
+{
+  position: absolute;
+  width: 210px;
+  top: 60px;
+  left: 65px;
 }
 
 /* vi:ex:ts=2:et */

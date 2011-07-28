@@ -6,9 +6,18 @@
 
 			if (!data)
 			{
-				$this.data('player', {
+				var settings = {
+					setplaylist: function () {}
+				};
+
+				$.extend(settings, options);
+
+				data = {
 					target: $this,
-				});
+					settings: settings
+				};
+
+				$this.data('player', data);
 
 				var div = $('<div>', {id: 'buttons'});
 				var buttons = [
@@ -56,18 +65,61 @@
 					img.appendTo(div);
 				});
 
+				var vol = $('<div/>', {
+					id: 'volume'
+				});
+
+				var img = $('<img/>', {
+					id: 'button_mute',
+					src: "/static/images/stock_volume-mute.png",
+					'class': 'button',
+					title: 'Mute'
+				});
+
+				img.bind('click', function () {
+					$this.player('mute');
+				});
+
+				img.appendTo(vol);
+
+				var volpgsc = $('<div/>', {
+					id: 'volume_progress_container',
+					'class': 'progress_container'
+				});
+
+				volpgsc.bind('click', function (e) {
+					var p = e.offsetX / volpgsc.width();
+					$this.player('volume', p);
+				});
+
+				var volpgs = $('<div/>', {
+					id: 'volume_progress',
+					'class': 'progress'
+				})
+
+				volpgs.appendTo(volpgsc);
+
+				vol.appendTo(div);
+				volpgsc.appendTo(div);
+
 				div.appendTo($this);
 
 				div = $('<div/>', {id: 'playing'});
 				div.appendTo($this);
 
-				div = $('<div/>', {id: 'playing_duration'});
+				div = $('<div/>', {id: 'playing_duration', 'class': 'progress_container'});
 				div.appendTo($this);
 
 				div = $('<div/>', {id: 'actions'});
+
 				var inp = $('<input/>', {
 					type: 'button',
-					value: 'Set Playlist'
+					value: 'Set Playlist',
+					id: 'setplaylist'
+				});
+
+				inp.bind('click', function () {
+					data.settings.setplaylist.call($this);
 				});
 
 				inp.appendTo(div);
@@ -114,16 +166,43 @@
 		update_state: function () {
 			var $this = $(this);
 
+			var pgs = $('#player .progress').data('playing');
+
+			if (pgs && pgs.timeout)
+			{
+				clearTimeout(pgs.timeout);
+				pgs.timeout = 0;
+			}
+
 			$.getJSON('/player', function (data) {
 				if (data.shuffle)
 				{
 					$('#button_shuffle').addClass('toggled');
+				}
+				else
+				{
+					$('#button_shuffle').removeClass('toggled');
 				}
 
 				if (data.repeat)
 				{
 					$('#button_repeat').addClass('toggled');
 				}
+				else
+				{
+					$('#button_repeat').removeClass('toggled');
+				}
+
+				if (data.mute)
+				{
+					$('#button_mute').addClass('toggled');
+				}
+				else
+				{
+					$('#button_mute').removeClass('toggled');
+				}
+
+				$('#volume_progress').css('width', (data.volume * 100) + '%');
 
 				var playing = $('#playing');
 				var progress = $('#player .progress');
@@ -210,17 +289,17 @@
 
 					div.appendTo(playing);
 				}
-
-				$this.player('update_queue');
 			});
+
+			$this.player('update_queue');
 		},
 
-		append_queue: function (header, item, after) {
+		append_queue: function (header, item, after, delay) {
 			var $this = $(this);
 			var queue = $('#queue');
 			var div = $('<div/>', {
 				id: 'queued_' + item[header.id],
-				'class': 'queued'
+				'class': 'queued',
 			});
 
 			div.data('queued', {id: item[header.id]});
@@ -232,7 +311,13 @@
 
 			but.bind('click', function (e) {
 				$this.player('dequeue', item[header.id]);
-				div.animate({width: 0}, function () { div.remove(); })
+				div.children().fadeOut();
+	
+				div.animate({width: 0}, function () {
+					div.animate({margin_left: 0}, function () {
+						div.remove();
+					});
+				});
 			});
 
 			but.appendTo(div);
@@ -244,6 +329,25 @@
 			else
 			{
 				div.appendTo(queue);
+			}
+
+			if (!delay)
+			{
+				delay = 0;
+			}
+
+			div.css('opacity', 0);
+
+			if (delay > 0)
+			{
+				setTimeout(function () {
+					div.animate({opacity: 1}, {duration: 500});
+					return false;
+				}, delay);
+			}
+			else
+			{
+				div.animate({opacity: 1}, {duration: 500});
 			}
 
 			return div;
@@ -262,7 +366,7 @@
 
 				var pgs = $('#player .progress').data('playing');
 
-				if (pgs && data.items[0][header.id] == pgs.id)
+				if (pgs && data.items && data.items.length && data.items[0][header.id] == pgs.id)
 				{
 					data.items.shift();
 				}
@@ -283,6 +387,7 @@
 					{
 						$(queued).animate({
 							width: 0,
+							margin: 0
 						},
 						function () {
 							$(queued).remove();
@@ -291,6 +396,7 @@
 				});
 
 				var last = undefined;
+				var timeout = 0;
 
 				$.each(data.items, function (index, item) {
 					var d = $('#queued_' + item[header.id]);
@@ -301,7 +407,8 @@
 					}
 					else
 					{
-						last = $this.player('append_queue', header, item, last);
+						last = $this.player('append_queue', header, item, last, timeout);
+						timeout += 50;
 					}
 				});
 			});
@@ -370,6 +477,37 @@
 				clearTimeout(pgs.timeout);
 				pgs.timeout = 0;
 			}
+		},
+
+		volume: function (volume) {
+			$.ajax('/player/volume/' + volume, {
+				type: 'PUT',
+				complete: function () {
+					$('#volume_progress').css('width', (volume * 100) + '%');
+				}
+			});
+		},
+
+		mute: function () {
+			var button = $('#button_mute');
+			var $this = $(this);
+
+			var v = '0';
+
+			if (!button.hasClass('toggled'))
+			{
+				v = '1';
+			}
+
+			$.ajax({
+				url: '/player/mute/' + v,
+				type: 'PUT',
+				complete: function () {
+					$this.player('update_state_delayed');
+
+					button.toggleClass('toggled');
+				}
+			});
 		},
 
 		play: function () {

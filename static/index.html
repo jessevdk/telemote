@@ -88,7 +88,9 @@
                     }
                 });
 
-                $('#player').player();
+                $('#player').player({
+                    setplaylist: function () {set_playlist($('#setplaylist'))}
+                });
             });
 
             function set_playlist(button)
@@ -112,7 +114,9 @@
                     $(button).removeClass('pressed');
                 }, 100);
 
-                $('#player').player('playlist', src, ids);
+                $('#player').player('playlist', src, ids, function () {
+                    $('#playlists').playlists('refresh');
+                });
             }
         </script>
     </body>
