@@ -8,19 +8,6 @@ import utils
 import telemotec
 import sys
 
-class Seek(resource.Resource):
-    def __init__(self, base):
-        resource.Resource.__init__(self)
-        self.base = base
-
-    def render_PUT(self, request):
-        self.base.player.seek(self.offset)
-        return '{}'
-
-    def getChild(self, name, request):
-        self.offset = int(name)
-        return self
-
 class Player(Method):
     def __init__(self, shell, sources):
         Method.__init__(self)
@@ -30,20 +17,31 @@ class Player(Method):
         self.player = shell.get_player()
 
     def _method_play_PUT(self, args, request):
-        if not self.player.props.source:
-            src = self.shell.props.library_source
-            self.player.set_playing_source(src)
-        else:
-            self.player.play()
+        r, playing = self.player.get_playing()
+
+        if not playing:
+            utils.run_in_main(self.player.playpause, False)
+
+    def _method_seek_PUT(self, args, request):
+        offset = int(args[0])
+        utils.run_in_main(self.player.seek, offset)
 
     def _method_next_PUT(self, args, request):
-        self.player.do_next()
+        utils.run_in_main(self.player.do_next)
 
     def _method_previous_PUT(self, args, request):
-        self.player.do_previous()
+        utils.run_in_main(self.player.do_previous)
 
     def _method_pause_PUT(self, args, request):
         self.player.pause()
+
+    def _method_mute_PUT(self, args, request):
+        if int(args[0]):
+            mute = True
+        else:
+            mute = False
+
+        utils.run_in_main(self.player.set_mute, mute)
 
     def _method_repeat_PUT(self, args, request):
         ret, shuffle, repeat = self.player.get_playback_state()
@@ -53,7 +51,10 @@ class Player(Method):
         else:
             repeat = False
 
-        self.player.set_playback_state(shuffle, repeat)
+        utils.run_in_main(self.player.set_playback_state, shuffle, repeat)
+
+    def _method_volume_PUT(self, args, request):
+        utils.run_in_main(self.player.set_volume, float(args[0]))
 
     def _method_repeat_GET(self, args, request):
         ret, shuffle, repeat = self.player.get_playback_state()
@@ -99,7 +100,8 @@ class Player(Method):
                 continue
 
             entry = self.shell.props.db.entry_lookup_by_id(int(id))
-            self.shell.remove_from_queue(entry.get_string(RB.RhythmDBPropType.LOCATION))
+
+            utils.run_in_main(self.shell.remove_from_queue, entry.get_string(RB.RhythmDBPropType.LOCATION))
 
     def _method_playlist_PUT(self, args, request):
         srcid = int(args[0])
