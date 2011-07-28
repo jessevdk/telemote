@@ -156,7 +156,10 @@ class Player(Method):
             [r, t] = self.player.get_playing_time()
             item.append(t)
 
-        ret = {'header': header, 'current': item, 'repeat': repeat, 'shuffle': shuffle, 'playing': self.player.props.playing}
+        r, volume = self.player.get_volume()
+        r, mute = self.player.get_mute()
+
+        ret = {'header': header, 'current': item, 'repeat': repeat, 'shuffle': shuffle, 'playing': self.player.props.playing, 'volume': volume, 'mute': mute};
 
         return json.dumps(ret)
 
