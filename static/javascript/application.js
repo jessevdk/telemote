@@ -24,6 +24,10 @@ function animate_activate(elements, timeout, times, callback)
 }
 
 $(document).ready(function () {
+	$('body').bind('touchmove', function (e) {
+		e.preventDefault();
+	});
+
 	$('#playlists').playlists({
 		listview: {
 		    selection_changed: function () {
