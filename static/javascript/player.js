@@ -472,7 +472,7 @@
 
 		stop_duration: function () {
 			var $this = $(this);
-			var pgs = $('#player .progress').data('playing');
+			var pgs = $('#playing_duration .progress').data('playing');
 
 			if (pgs && pgs.timeout)
 			{
