@@ -99,7 +99,7 @@
 			    data = $this.data('listview');
 
 			var rows = data.table.find('tbody tr');
-			$this.listview('select_row', $(rows[0]).listview('row'), multi);
+			$this.listview('select_row', $(rows[index]).listview('row'), multi);
 		},
 
 		select_row: function (row, multi) {
