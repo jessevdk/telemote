@@ -3,8 +3,15 @@
     <head>
         <title>TeleMote</title>
         <script type="text/javascript" src="/static/javascript/jquery-1.6.2.min.js"></script>
-        <script type="text/javascript" src="/static/javascript/jquery.include.js"></script>
+        <script type="text/javascript" src="/static/javascript/utils.js"></script>
+        <script type="text/javascript" src="/static/javascript/button.js"></script>
+        <script type="text/javascript" src="/static/javascript/listview.js"></script>
+        <script type="text/javascript" src="/static/javascript/playlists.js"></script>
+        <script type="text/javascript" src="/static/javascript/artists.js"></script>
+        <script type="text/javascript" src="/static/javascript/songs.js"></script>
+        <script type="text/javascript" src="/static/javascript/player.js"></script>
         <script type="text/javascript" src="/static/javascript/application.js"></script>
+
         <link rel="stylesheet" href="/static/styles/default.css" type="text/css" media="all" charset="utf-8" />
     </head>
     <body>
@@ -19,106 +26,6 @@
         <div id="player">
         </div>
         </div>
-
-        <script type="text/javascript">
-            var initializing = true;
-
-            function current_source()
-            {
-                var selection = $('#playlists').playlists('listview').listview('selected');
-
-                if (selection)
-                {
-                    return selection[0].id;
-                }
-            }
-
-            function animate_activate(elements, timeout, times, callback)
-            {
-                if (times == 0)
-                {
-                    callback(elements);
-                    return;
-                }
-
-                elements.toggleClass('selected');
-
-                setTimeout(function () { animate_activate (elements, timeout, times - 1, callback)}, timeout);
-            }
-
-            $(document).ready(function () {
-                $('#playlists').playlists({
-                    listview: {
-                        selection_changed: function () {
-                            $('#artists').artists('refresh', current_source());
-                        }
-                    },
-                    loaded: function () {
-                        $(this).playlists('listview').listview('select_index', 0);
-                    }
-                });
-                $('#artists').artists({
-                    listview: {
-                        selection_changed: function () {
-                            var src = current_source();
-                            var selection = $.map(this.listview('selected'),
-                                                  function (item) {
-                                                      return item.id;
-                                                  });
-
-                            $('#songs').songs('refresh', src, selection);
-                        }
-                    },
-                    loaded: function () {
-                        $(this).artists('listview').listview('select_index', 0);
-                    }
-                });
-                $('#songs').songs({
-                    listview: {
-                        activated: function (rows) {
-                            animate_activate(rows.target, 100, 6, function () {
-                                $('#player').player('queue', rows.data.id);
-                            });
-                        }
-                    },
-                    queued: function (row) {
-                        animate_activate(row.target, 100, 6, function () {
-                            $('#player').player('queue', row.data.id);
-                        });
-                    }
-                });
-
-                $('#player').player({
-                    setplaylist: function () {set_playlist($('#setplaylist'))}
-                });
-            });
-
-            function set_playlist(button)
-            {
-                $(button).addClass('pressed');
-
-                var src = current_source();
-                var listview = $('#songs').songs('listview');
-                var selection = listview.listview('selected');
-
-                if (!selection || selection.length == 0)
-                {
-                    selection = listview.listview('rows');
-                }
-
-                var ids = $.map(selection, function (item) {
-                    return item.id;
-                });
-
-                setTimeout(function () {
-                    $(button).removeClass('pressed');
-                }, 100);
-
-                $('#player').player('playlist', src, ids, function () {
-                    $('#playlists').playlists('refresh');
-                });
-            }
-        </script>
     </body>
 </html>
 <!-- vi:ex:ts=4:et -->
