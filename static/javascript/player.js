@@ -58,6 +58,8 @@
 
 					var name = elem.name;
 
+					img.button();
+
 					img.bind('click', function (e) {
 						$this.player(name);
 					});

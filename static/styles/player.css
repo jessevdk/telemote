@@ -21,7 +21,7 @@
   margin-left: 5px;
 }
 
-#player #buttons .toggled
+#player #buttons .toggled, #player #buttons .pressed
 {
   background: -webkit-gradient(linear, left top, left bottom, from(#333), to(#666));
   background: -moz-linear-gradient(top, #333, #666);
