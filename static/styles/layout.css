@@ -18,7 +18,7 @@
 {
   position: relative;
   height: 100%;
-  margin-left: 400px;
+  margin-left: 450px;
 }
 
 #player
@@ -44,8 +44,13 @@
 #artists
 {
   float: left;
-  width: 200px;
+  width: 250px;
   height: 100%;
+}
+
+#artists .listview
+{
+  overflow-x: hidden;
 }
 
 #songs

@@ -6,6 +6,19 @@
 @import url('player.css');
 @import url('button.css');
 
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px)
+{
+  @import url('ipad.css');
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+  @import url('ipad_landscape.css');
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+  @import url('ipad_portrait.css');
+}
+
 html
 {
   height: 100%;

@@ -24,6 +24,8 @@ function animate_activate(elements, timeout, times, callback)
 }
 
 $(document).ready(function () {
+	jQuery.event.props.push("targetTouches");
+
 	$('body').bind('touchmove', function (e) {
 		e.preventDefault();
 	});

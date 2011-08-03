@@ -60,9 +60,18 @@
 
 					img.button();
 
-					img.bind('click', function (e) {
-						$this.player(name);
-					});
+					if (!img.attr('ontouchend'))
+					{
+						img.bind('click', function (e) {
+							$this.player(name);
+						});
+					}
+					else
+					{
+						img.bind('touchend', function (e) {
+							$this.player(name);
+						});
+					}
 
 					img.appendTo(div);
 				});

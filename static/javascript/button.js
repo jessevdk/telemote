@@ -5,13 +5,26 @@
 
 			$this.css('cursor', 'pointer');
 
-			$this.bind('click', function (e) {
-				$this.addClass('pressed');
+			if (!$this.attr('ontouchstart'))
+			{
+				$this.bind('click', function (e) {
+					$this.addClass('pressed');
 
-				setTimeout(function () {
-					$this.removeClass('pressed');
-				}, 100);
-			});
+					setTimeout(function () {
+						$this.removeClass('pressed');
+					}, 100);
+				});
+			}
+			else
+			{
+				$this.bind('touchstart', function (e) {
+					$(e.target).addClass('pressed');
+				});
+
+				$this.bind('touchend', function (e) {
+					$(e.target).removeClass('pressed');
+				});
+			}
 
 			return $this;
 		}
