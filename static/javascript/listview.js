@@ -9,6 +9,7 @@
 				columns: [],
 				selectable: true,
 				multiselect: true,
+				kinetic_scroll: true,
 				selection_changed: function () {},
 				activated: function () {}
 			};
@@ -19,6 +20,11 @@
 			{
 				$this.listview('columns', settings.columns);
 				return $this;
+			}
+
+			if (settings.kinetic_scroll)
+			{
+				$this.kineticscroll();
 			}
 
 			var table = $('<table><colgroup/><thead/><tbody/></table>');
@@ -39,102 +45,7 @@
 				$this.addClass('selectable');
 			}
 
-			$this.bind('touchstart', function (e) {
-				$this.listview('touchstart', e);
-			});
-
-			$this.bind('touchmove', function (e) {
-				$this.listview('touchmove', e);
-			});
-
-			$this.bind('touchend', function (e) {
-				$this.listview('touchend', e);
-			});
-
 			return $this;
-		},
-
-		touchstart: function (e) {
-			var $this = $(this),
-			    data = $this.data('listview');
-
-			if (e.targetTouches.length != 1)
-			{
-				return false;
-			}
-
-			var x = e.targetTouches[0].clientX;
-			var y = e.targetTouches[0].clientY;
-
-			data.scroll = {
-				scroll_top: $this.scrollTop(),
-				x: x,
-				y: y,
-				last: {
-					x: x,
-					y: y,
-					t: (new Date()).getTime(),
-				},
-				v: 0
-			};
-
-		},
-
-		touchmove: function (e) {
-			var $this = $(this),
-			    data = $this.data('listview');
-
-			if (e.targetTouches.length != 1)
-			{
-				return false;
-			}
-
-			var y = e.targetTouches[0].clientY;
-			var yd = data.scroll.y - y;
-			var t = (new Date()).getTime();
-
-			data.scroll.v = (e.targetTouches[0].clientY - data.scroll.last.y) /
-			                ((t - data.scroll.last.t) / 1000.0);
-
-			data.scroll.last.x = e.targetTouches[0].clientX;
-			data.scroll.last.y = e.targetTouches[0].clientY;
-			data.scroll.last.t = t;
-
-			$this.scrollTop(data.scroll.scroll_top + yd);
-		},
-
-		touchend: function (e) {
-			var $this = $(this),
-			    data = $this.data('listview');
-
-			if (data.scroll.v > 0)
-			{
-				$this.listview('decelerate');
-			}
-		},
-
-		decelerate: function () {
-			var $this = $(this),
-			    data = $this.data('listview');
-
-			var a = -10;
-
-			if (data.scroll.v > 0)
-			{
-				data.scroll.last.y += data.scroll.v * (13.0 / 1000);
-
-				var yd = data.scroll.y - data.scroll.last.y;
-				$this.scrollTop(data.scroll.scroll_top + yd);
-			}
-
-			data.scroll.v += a * (13.0 / 1000);
-
-			if (data.scroll.v > 0)
-			{
-				setTimeout(function () {
-					$this.listview('decelerate');
-				}, 13);
-			}
 		},
 
 		columns: function (columns) {
