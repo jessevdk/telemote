@@ -60,7 +60,7 @@
 
 					img.button();
 
-					if (!img.attr('ontouchend'))
+					if (!jQuery.support.touch)
 					{
 						img.bind('click', function (e) {
 							$this.player(name);

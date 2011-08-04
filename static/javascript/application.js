@@ -24,11 +24,21 @@ function animate_activate(elements, timeout, times, callback)
 }
 
 $(document).ready(function () {
-	jQuery.event.props.push("targetTouches");
+	if (this.ontouchstart !== undefined)
+	{
+		jQuery.event.props.push("targetTouches");
+		jQuery.event.props.push("touches");
+		jQuery.event.props.push("changedTouches");
+		jQuery.support.touch = true;
 
-	$('body').bind('touchmove', function (e) {
-		e.preventDefault();
-	});
+		$('body').bind('touchmove', function (e) {
+			e.preventDefault();
+		});
+	}
+	else
+	{
+		jQuery.support.touch = false;
+	}
 
 	$('#playlists').playlists({
 		listview: {

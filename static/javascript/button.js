@@ -5,7 +5,7 @@
 
 			$this.css('cursor', 'pointer');
 
-			if (!$this.attr('ontouchstart'))
+			if (!jQuery.support.touch)
 			{
 				$this.bind('click', function (e) {
 					$this.addClass('pressed');

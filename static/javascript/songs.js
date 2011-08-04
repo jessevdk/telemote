@@ -8,44 +8,50 @@
 			{
 				var pl = $('<div/>');
 
+				var columns = [
+					{
+						name: 'Album',
+						name_hidden: true,
+						filter: function (e) { return '<div class="album">' + e.album + '</div> <div class="artist">' + e.artist + '</div>'; },
+						grouped: true
+					},
+					{
+						name: 'Title',
+						width: '50%',
+						filter: function (e) { return e.name; }
+					},
+					{
+						name: 'Duration',
+						width: '30px',
+						filter: function (e) { return Utils.format_duration(e.duration); }
+					}
+				];
+
+				if (!jQuery.support.touch)
+				{
+					columns.push({
+						name: 'Queue',
+						width: '30px',
+						name_hidden: true,
+						filter: function (e) {
+							var img  = $('<img/>', {
+								src: '/static/images/add.png',
+								title: 'Add song to queue'
+							});
+
+							img.bind('click', function (e) {
+								$this.songs.call($this, 'queue', $(img.parents('tr')[0]).listview('row'));
+								return false;
+							});
+
+							return img;
+						}
+					});
+				}
+
 				var settings = {
 					listview: {
-						columns: [
-							{
-								name: 'Album',
-								name_hidden: true,
-								filter: function (e) { return '<div class="album">' + e.album + '</div> <div class="artist">' + e.artist + '</div>'; },
-								grouped: true
-							},
-							{
-								name: 'Title',
-								width: '50%',
-								filter: function (e) { return e.name; }
-							},
-							{
-								name: 'Duration',
-								width: '30px',
-								filter: function (e) { return Utils.format_duration(e.duration); }
-							},
-							{
-								name: 'Queue',
-								width: '30px',
-								name_hidden: true,
-								filter: function (e) {
-									var img  = $('<img/>', {
-										src: '/static/images/add.png',
-										title: 'Add song to queue'
-									});
-
-									img.bind('click', function (e) {
-										$this.songs.call($this, 'queue', $(img.parents('tr')[0]).listview('row'));
-										return false;
-									});
-
-									return img;
-								}
-							}
-						],
+						columns: columns,
 						multiselect: true,
 						header_visible: true
 					},

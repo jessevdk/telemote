@@ -246,19 +246,21 @@
 
 				if (data.settings.selectable)
 				{
-					tr.bind('click', function (e) {
-						if (!data.ignore_click)
-						{
-							$this.listview('select_row', $(tr).listview('row'), e.ctrlKey || e.button == 1);
-						}
-					});
-
-					tr.bind('mousedown', function (e) {
+					tr.bind(jQuery.support.touch ? 'touchstart' : 'mousedown', function (e) {
 						data.ignore_click = false;
 
-						if (e.button != 0)
+						if (jQuery.support.touch)
 						{
-							return;
+							data.multi = e.touches.length > 1;
+						}
+						else
+						{
+							data.multi = e.ctrlKey;
+						}
+
+						if (data.activate_timeout)
+						{
+							clearTimeout(data.activate_timeout);
 						}
 
 						data.activate_timeout = setTimeout(function () {
@@ -266,14 +268,23 @@
 							data.activate_timeout = 0;
 							data.ignore_click = true;
 						}, 1000);
+
+						return true;
 					});
 
-					tr.bind('mouseup', function (e) {
+					tr.bind(jQuery.support.touch ? 'touchend' : 'mouseup', function (e) {
+						if (!data.ignore_click)
+						{
+							$this.listview('select_row', $(tr).listview('row'), data.multi);
+						}
+
 						if (data.activate_timeout)
 						{
 							clearTimeout(data.activate_timeout);
 							data.activate_timeout = 0;
 						}
+
+						return true;
 					});
 				}
 
