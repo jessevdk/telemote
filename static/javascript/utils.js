@@ -37,6 +37,15 @@ var Utils =
 		{
 			return minutes + ':' + Utils.prefix_zero(seconds);
 		}
+	},
+
+	debug: function () {
+		$('#debug').show();
+
+		var s = Array.prototype.join.call(arguments, ' ');
+
+		$('<div/>', {html: s}).appendTo($('#debug'));
 	}
 };
 
+/* vi:ex:ts=4 */

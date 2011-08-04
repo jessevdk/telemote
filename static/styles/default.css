@@ -57,4 +57,17 @@ input[type='button'].pressed, input[type='button'].pressed:hover
   background-color: #000;
 }
 
+div#debug
+{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 5px;
+  background-color: #333;
+  color: #fff;
+  max-height: 200px;
+  overflow: auto;
+  display: none;
+}
+
 /* vi:ex:ts=2:et */
